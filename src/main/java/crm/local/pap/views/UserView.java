@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import crm.local.pap.dtos.UserDTO;
+import crm.local.pap.models.User;
 import crm.local.pap.repositories.UserRepository;
 
 @RestController
@@ -20,15 +20,16 @@ public class UserView {
     private UserRepository userRepository;
 
     @GetMapping({ "", "/" })
-    public ResponseEntity<List<UserDTO>> getUsers() {
-        List<UserDTO> users = userRepository.findAll().stream().map(entity -> {
-            UserDTO userdto = new UserDTO();
-            userdto.name = entity.getName();
-            userdto.role = entity.getRole();
-            userdto.number = entity.getNumber();
-            userdto.email = entity.getEmail();
-            userdto.pass = entity.getPass();
-            return userdto;
+    public ResponseEntity<List<User>> getUsers() {
+        List<User> users = userRepository.findAll().stream().map(entity -> {
+            User user = new User();
+            user.setFirstName(entity.getFirstName());
+            user.setLastName(entity.getLastName());
+            user.setRoles(entity.getRoles());
+            user.setNumber(entity.getNumber());
+            user.setEmail(entity.getEmail());
+            user.setPassword(entity.getPassword());
+            return user;
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(users);

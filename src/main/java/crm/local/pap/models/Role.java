@@ -3,23 +3,38 @@
 
 package crm.local.pap.models;
 
+import crm.local.pap.enums.RoleType;
+
+import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Setter
-@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Entity
-@Table
 
 public class Role {
+
+    /*@GeneratedValue(strategy = GenerationType.UUID)
+    public UUID id;*/
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
-    private String name;
+    @jakarta.persistence.Enumerated(value = jakarta.persistence.EnumType.STRING)
+    @jakarta.persistence.Column(nullable = false, unique = true)
+    private RoleType name;
+
+    // @ManyToMany(mappedBy = "roles")
+    //private Set<User> users = new HashSet<>();
+
+    public Role(RoleType name) {
+        this.name = name;
+    }
 }

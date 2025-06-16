@@ -3,102 +3,135 @@
 
 package crm.local.pap.models;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
-public class User {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class User implements UserDetails{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
-    private String name;
-
+    private String firstName;
+    
     @Column(nullable = false)
-    private String role;
-
-    @Column(nullable = false)
-    private String number;
+    private String lastName;
 
     @Column(nullable = false, unique = true)
     private String email;
-    private String pass;
+    
+    @Column(nullable = false, unique = true)
+    private String number;
 
-    public User() {
+    @Column(nullable = false, unique = true, length = 80)
+    private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name="user_id"),
+        inverseJoinColumns = @JoinColumn(name="role_id")
+    )
+    private Set<Role> roles;
+
+    @OneToMany(
+        mappedBy = "responsible",
+        cascade = CascadeType.PERSIST,
+        fetch = FetchType.LAZY 
+    )
+    private Set<Task> ownedTasks = new HashSet<>();
+
+    @OneToMany(
+        mappedBy = "employee",
+        cascade = CascadeType.PERSIST,
+        fetch = FetchType.LAZY 
+    )
+    private Set<Task> assignedTasks = new HashSet<>();
+
+    public void addOwnedTask(Task task) {
+        ownedTasks.add(task);
+        task.setResponsible(this);
+    }
+    public void removeOwnedTask(Task task) {
+        ownedTasks.remove(task);
+        task.setResponsible(this);
+    }
+    public void addAssignedTask(Task task) {
+        assignedTasks.add(task);
+        task.setEmployee(this);
+    }
+    public void removeAssignedTask(Task task) {
+        assignedTasks.remove(task);
+        task.setEmployee(this);
     }
 
-    public User(Long id, String name, String role, String number, String email, String pass) {
-        this.id = id;
-        this.name = name;
-        this.role = role;
-        this.number = number;
-        this.email = email;
-        this.pass = pass;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+
+        for(Role role : this.roles) {
+            authorities.add(() -> role.getName().name());
+        }
+
+        return authorities;
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public String getPassword() {
+        return this.password;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public String getRole() {
-        return role;
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    @Override
+    public String getUsername() {
+        return this.email;
     }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPass() {
-        return pass;
-    }
-
-    public void setPass(String pass) {
-        this.pass = pass;
-    }
-
-    public Optional<User> getRoles() {
-        throw new UnsupportedOperationException("Unimplemented method 'getRoles'");
-    }
-
-    public void setRole(Set<Role> of) {
-        throw new UnsupportedOperationException("Unimplemented method 'setRole'");
-    }
+    
 }
