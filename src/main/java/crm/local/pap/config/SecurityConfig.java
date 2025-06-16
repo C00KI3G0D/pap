@@ -36,7 +36,7 @@ public class SecurityConfig {
 
         return http.build();
     }
-    
+
 
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
