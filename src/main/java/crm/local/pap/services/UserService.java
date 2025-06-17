@@ -1,10 +1,6 @@
 package crm.local.pap.services;
 
-
-
-
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,22 +26,30 @@ public class UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public User registerUser(SignupDTO request) {
-        User user = new User();
-        user.setFirstName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+    public User registerUser(SignupDTO signupRequest) {
 
-        Set<Role> userRoles = new HashSet<>();
-
-        if(request.getRoles() != null) {
-            for (RoleType roleType : request.getRoles()) {
-                Optional<Role> role = roleRepository.findByName(roleType);
-                role.ifPresent(userRoles::add);
-            }
-    
-            user.setRoles(userRoles);
+        if (userRepository.existsByEmail(signupRequest.getEmail())) {
+            throw new RuntimeException("Error: Email já está vinculado!");
         }
+
+        User user = new User();
+
+        // Mapear os campos do DTO para a entidade User direitim
+
+        user.setFirstName(signupRequest.getFirstName());
+        user.setLastName(signupRequest.getLastName());
+        user.setEmail(signupRequest.getEmail());
+        user.setNumber(signupRequest.getNumber());
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+
+        // Vamos encontrar o Role de user ou atirar lhe um erro aos cornos se nn encontrar na DB.
+
+        Role userRole = roleRepository.findByName(RoleType.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error: Default role not found."));
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(userRole);
+        user.setRoles(roles);
 
         return userRepository.save(user);
     }
