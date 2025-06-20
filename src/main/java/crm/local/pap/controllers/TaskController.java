@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import crm.local.pap.services.TaskService;
-import crm.local.pap.models.Task;
-
+import crm.local.pap.dtos.TaskDisplayDTO;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -19,9 +18,9 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
-    
+
     @GetMapping({"" , "/"})
-    public ResponseEntity<List<Task>> getTasks() {
-        return new ResponseEntity<List<Task>>(this.taskService.getTasks(), HttpStatus.OK);
+    public ResponseEntity<List<TaskDisplayDTO>> getTasks() {
+        return new ResponseEntity<>(this.taskService.getTasksForDisplay(), HttpStatus.OK);
     }
 }
