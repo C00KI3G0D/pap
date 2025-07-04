@@ -1,11 +1,5 @@
 package crm.local.pap.controllers;
 
-import crm.local.pap.dtos.JwtAuthResponse;
-import crm.local.pap.dtos.LoginDTO;
-import crm.local.pap.dtos.SignupDTO;
-import crm.local.pap.services.JwtProvider;
-import crm.local.pap.services.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +8,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import crm.local.pap.dtos.JwtAuthResponse;
+import crm.local.pap.dtos.LoginDTO;
+import crm.local.pap.dtos.SignupDTO;
+import crm.local.pap.services.JwtProvider;
+import crm.local.pap.services.UserService;
 
 
 @RestController
@@ -28,8 +31,7 @@ public class AuthenticationController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserService userService; // Sim Tiago, tu foste a anta que tinha erros por ter tocado no
-                                    // tab mal sem se aperceber e por o REPOSITORY AQUIII
+    private UserService userService; 
     @Autowired
     private JwtProvider jwtProvider;
 
@@ -53,13 +55,11 @@ public class AuthenticationController {
 
         try {
 
-            // Resposta a partir da lógica do userService 
             userService.registerUser(signupRequest);
             return new ResponseEntity<>("Utilizador criado com sucesso!", HttpStatus.OK);
 
         } catch (RuntimeException e) {
 
-            // Vou apanha erros do Service caso dê mierda
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 
         }

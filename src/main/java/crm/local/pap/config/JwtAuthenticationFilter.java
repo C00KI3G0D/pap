@@ -1,10 +1,7 @@
 package crm.local.pap.config;
 
-import crm.local.pap.services.JwtProvider;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
+import crm.local.pap.services.JwtProvider;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -31,16 +32,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Apanhar o JWT a partir do REQUEST no Postman ou Browser 
         String token = getJwtFromRequest(request);
 
-        // Validar o token
         if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
 
-            // GET nome de utilizador a partir do token
             String username = jwtProvider.getUsernameFromToken(token);
 
-            // Devolver o utilizador que tá ligado ao token
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -49,7 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            // Enfiar o utilizador ja com autenticação feita no Spring Security context
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
 

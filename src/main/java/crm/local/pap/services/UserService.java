@@ -34,15 +34,11 @@ public class UserService {
 
         User user = new User();
 
-        // Mapear os campos do DTO para a entidade User direitim
-
         user.setFirstName(signupRequest.getFirstName());
         user.setLastName(signupRequest.getLastName());
         user.setEmail(signupRequest.getEmail());
         user.setNumber(signupRequest.getNumber());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-
-        // Vamos encontrar o Role de user ou atirar lhe um erro aos cornos se nn encontrar na DB.
 
         Role userRole = roleRepository.findByName(RoleType.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Error: Default role not found."));

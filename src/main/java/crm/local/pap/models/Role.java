@@ -1,6 +1,3 @@
-//  Uma entidade para representar / identificar um utilizador no sistema por campos (id, name).
-//  Usei anotações Lombok, porque esta ainda está em testes.
-
 package crm.local.pap.models;
 
 import java.util.HashSet;
@@ -8,12 +5,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import crm.local.pap.enums.RoleType;
-
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

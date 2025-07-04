@@ -1,6 +1,3 @@
-//  Uma entidade para representar / identificar os DETALHES de um utilizador no sistema por campos (id, name, role, number, email, pass).
-//  Serve para mapear os utilizadores na tabela correspondente (Também em desenvolvimento).
-
 package crm.local.pap.models;
 
 import java.util.Collection;

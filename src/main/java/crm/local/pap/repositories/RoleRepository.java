@@ -1,6 +1,3 @@
-//  Melhoramos as operações do CRUD.
-//  Também serve de método para encontrar um "role" pelo "name"
-
 package crm.local.pap.repositories;
 
 import java.util.Optional;
