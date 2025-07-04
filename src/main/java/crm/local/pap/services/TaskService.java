@@ -6,16 +6,21 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import crm.local.pap.models.Task;
-import crm.local.pap.repositories.TasksRepository;
+import crm.local.pap.dtos.TaskDTO;
 import crm.local.pap.dtos.TaskDisplayDTO;
+import crm.local.pap.models.Task;
+import crm.local.pap.models.User;
+import crm.local.pap.repositories.TasksRepository;
+import crm.local.pap.repositories.UserRepository;
 
 @Service
-
 public class TaskService {
 
     @Autowired
     private TasksRepository tasksRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<TaskDisplayDTO> getTasksForDisplay() {
         return tasksRepository.findAll().stream().map(task -> {
@@ -38,5 +43,36 @@ public class TaskService {
 
     public List<Task> getTasks() {
         return tasksRepository.findAll();
+    }
+
+
+    public Task createTask(TaskDTO taskDTO, String employeeUsername) {
+        Task task = new Task();
+        task.setName(taskDTO.getName());
+        task.setPrice(taskDTO.getPrice());
+        task.setTime(taskDTO.getTime());
+        task.setState(taskDTO.getState());
+        task.setTopic(taskDTO.getTopic());
+        task.setNotes(taskDTO.getNotes());
+
+
+        User employee = userRepository.findByEmail(employeeUsername)
+                .orElseThrow(() -> new RuntimeException("Funcionário autenticado não encontrado."));
+        task.setEmployee(employee);
+
+
+        if (taskDTO.getResponsibleFirstName() != null && taskDTO.getResponsibleLastName() != null) {
+            User responsible = userRepository.findByFirstNameAndLastName(
+                    taskDTO.getResponsibleFirstName(),
+                    taskDTO.getResponsibleLastName()
+            ).orElseThrow(() -> new RuntimeException("Cliente responsável não encontrado com o nome: " +
+                    taskDTO.getResponsibleFirstName() + " " + taskDTO.getResponsibleLastName()));
+            task.setResponsible(responsible);
+        } else {
+            throw new RuntimeException("O nome e o apelido do cliente responsável são obrigatórios.");
+        }
+
+
+        return tasksRepository.save(task);
     }
 }

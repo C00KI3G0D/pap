@@ -18,9 +18,6 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         
-        // nn quere criar ROLES??
-        // MAS EU MANDEI FZR, CHEGA-TE AQ QUE AGR LEVAS COM ELES
-        
         if (roleRepository.findByName(RoleType.ROLE_USER).isEmpty()) {
             roleRepository.save(new Role(RoleType.ROLE_USER));
         }
@@ -28,8 +25,5 @@ public class DataInitializer implements CommandLineRunner {
         if (roleRepository.findByName(RoleType.ROLE_ADMIN).isEmpty()) {
             roleRepository.save(new Role(RoleType.ROLE_ADMIN));
         }
-
-        // side note: parece brincadeira, mas tive as últimas 3HORAS da minha vida 
-        // à procura de 10 linhas de codigo, 10PUTAS DE LINHASSSS CRKGG
     }
 }

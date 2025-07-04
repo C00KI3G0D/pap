@@ -28,6 +28,7 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    @SuppressWarnings("unused")
     private PasswordEncoder passwordEncoder;
 
     @Autowired
